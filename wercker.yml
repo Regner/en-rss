@@ -5,7 +5,7 @@ box: python:2.7
 services:
     - id: google/cloud-sdk
       tag: latest
-      cmd: gcd-emulator
+      cmd: gcloud beta emulators datastore start
 
 build:
   steps:
@@ -13,8 +13,7 @@ build:
         name: setup virtual environment
         install_wheel: false # Enable wheel to speed up builds (experimental)
 
-    - pip-install:
-        requirements_file: "requirements.txt"
+    - pip-install
 
     - script:
         name: echo python information

@@ -14,7 +14,7 @@ FEED = os.environ.get('FEED_URL', 'http://newsfeed.eveonline.com/en-US/2/article
 SLEEP_TIME = int(os.environ.get('SLEEP_TIME', 300))
 
 # Datastore Settings
-DS_CLIENT = datastore.client()
+DS_CLIENT = datastore.Client()
 SERVICE_KIND = os.environ.get('DATASTORE_SERVICE_KIND', SERVICE_ID)
 SETTINGS_KIND = os.environ.get('DATASTORE_SETTINGS_KIND', 'EN-SETTINGS')
 
@@ -28,7 +28,7 @@ if not PS_TOPIC.exists():
 while True:
     logging.info('Checking {} for new entries'.format(SERVICE_ID))
     feed_data = feedparser.parse(FEED)
-    latest_entry = DS_CLIENT.get(datastore.Key(SERVICE_KIND, 'latest-entry'))
+    latest_entry = DS_CLIENT.get(DS_CLIENT.key(SERVICE_KIND, 'latest-entry'))
 
     for entry in feed_data.entries:
         converted_datetime = datetime.fromtimestamp(mktime(entry.published_parsed))
