@@ -5,7 +5,7 @@ box: python:2.7
 services:
     - id: google/cloud-sdk
       tag: latest
-      cmd: gcloud components install gcd-emulator && gcd-emulator
+      cmd: gcd-emulator
 
 build:
   steps:
