@@ -2,16 +2,16 @@
 
 box: python:2.7
 
-services:
-    - id: google/cloud-sdk
-      tag: latest
-      cmd: gcloud beta emulators datastore start
+# services:
+#     - id: google/cloud-sdk
+#       tag: latest
+#       cmd: gcloud beta emulators datastore start
 
 build:
   steps:
     - virtualenv:
         name: setup virtual environment
-        install_wheel: false # Enable wheel to speed up builds (experimental)
+        install_wheel: false
 
     - pip-install
 
@@ -20,3 +20,23 @@ build:
         code: |
           echo "python version $(python --version) running"
           echo "pip version $(pip --version) running"
+
+deploy:
+  box: google/cloud-sdk
+  steps:
+    - script:
+        name: install jq
+        code: wget -O /usr/local/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux-x86_64-static && chmod a+x /usr/local/bin/jq
+    
+    - script:
+        name: gcr.io authentication
+        code: |
+          gcloud auth activate-refresh-token $GCLOUD_ACCOUNT $GCLOUD_REFRESH_TOKEN
+          gcloud docker --authorize-only
+          export GCR_AUTH_TOKEN=$(cat $HOME/.dockercfg | jq --raw-output '.["https://eu.gcr.io"].auth' | base64 --decode | cut -d ':' -f2)
+    
+    - internal/docker-push:
+        username: _token
+        password: $GCR_AUTH_TOKEN
+        repository: eu.gcr.io/eve-notifications/en-rss
+        registry: https://eu.gcr.io
