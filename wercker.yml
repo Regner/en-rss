@@ -26,7 +26,7 @@ deploy:
   steps:
     - script:
         name: install jq
-        code: wget -O /usr/local/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux-x86_64-static && chmod a+x /usr/local/bin/jq
+        code: wget -O /usr/local/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 && chmod a+x /usr/local/bin/jq
     
     - script:
         name: gcr.io authentication
