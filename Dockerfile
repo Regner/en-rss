@@ -1,7 +1,7 @@
 
 
 FROM debian:latest
-MAINTAINER Regner Blok-Andersen <shadowdf@gmailc.om>
+MAINTAINER Regner Blok-Andersen <shadowdf@gmail.com>
 
 RUN apt-get update -qq
 RUN apt-get upgrade -y
