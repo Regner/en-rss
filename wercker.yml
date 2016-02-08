@@ -62,8 +62,10 @@ deploy:
         echo $CLIENT_SECRET | base64 --decode > ${HOME}/client-secret.json
         gcloud auth activate-service-account --key-file ${HOME}/client-secret.json
         gcloud config set project $GCLOUD_PROJECT
+        export GCR_AUTH_TOKEN=$(cat $HOME/.dockercfg | jq --raw-output '.["https://eu.gcr.io"].auth' | base64 --decode | cut -d ':' -f2)
 
   - kubectl:
       server: "https://130.211.59.0"
+      token: $GCR_AUTH_TOKEN
       insecure-skip-tls-verify: true
       command: create -f ens-rss-rc.yml
