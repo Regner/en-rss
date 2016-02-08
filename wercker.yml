@@ -37,8 +37,9 @@ deploy:
           gcloud docker --authorize-only
           export GCR_AUTH_TOKEN=$(cat $HOME/.dockercfg | jq --raw-output '.["https://eu.gcr.io"].auth' | base64 --decode | cut -d ':' -f2)
     
-    - internal/docker-push:
-        username: _token
-        password: $GCR_AUTH_TOKEN
-        repository: eu.gcr.io/eve-notifications/en-rss
-        registry: https://eu.gcr.io
+    push-container:
+      - internal/docker-push:
+          username: _token
+          password: $GCR_AUTH_TOKEN
+          repository: eu.gcr.io/eve-notifications/en-rss
+          registry: https://eu.gcr.io
