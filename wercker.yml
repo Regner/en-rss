@@ -21,14 +21,6 @@ build:
           echo "python version $(python --version) running"
           echo "pip version $(pip --version) running"
 
-    - script:
-        name: create ens-rss-rc.yml
-        code: ./create_ens-rss-rc.yml.sh
-
-    - script:
-        name: copy to deploy location
-        code: cp ens-rss-rc.yml "$WERCKER_OUTPUT_DIR"
-
 deploy:
   box: google/cloud-sdk
   steps:
