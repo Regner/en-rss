@@ -8,5 +8,11 @@ RUN apt-get upgrade -y
 RUN apt-get install -y python-dev python-pip
 RUN pip install -qU pip
 
+ADD en_rss.py /en_rss/
+ADD requirements.txt /en_rss/
+
 WORKDIR /en_rss/
+
+RUN pip install -r requirements.txt
+
 CMD python /en_rss/en_rss.py
