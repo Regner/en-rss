@@ -64,5 +64,4 @@ deploy:
         gcloud config set project $GCLOUD_PROJECT
 
   - kubectl:
-      insecure-skip-tls-verify: true
       command: create -f ens-rss-rc.yml
