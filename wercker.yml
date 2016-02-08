@@ -64,4 +64,5 @@ deploy:
         gcloud config set project $GCLOUD_PROJECT
 
   - kubectl:
+      server: "https://130.211.59.0"
       command: create -f ens-rss-rc.yml
