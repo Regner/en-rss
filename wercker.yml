@@ -32,37 +32,37 @@ build:
 deploy:
   box: google/cloud-sdk
   steps:
-    - script:
-        name: install jq
-        code: wget -O /usr/local/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 && chmod a+x /usr/local/bin/jq
-    
-    - script:
-        name: gcr.io authentication
-        code: |
-          echo $CLIENT_SECRET | base64 --decode > ${HOME}/client-secret.json
-          gcloud auth activate-service-account --key-file ${HOME}/client-secret.json
-          gcloud config set project $GCLOUD_PROJECT
-          gcloud docker --authorize-only
-          export GCR_AUTH_TOKEN=$(cat $HOME/.dockercfg | jq --raw-output '.["https://eu.gcr.io"].auth' | base64 --decode | cut -d ':' -f2)
+  - script:
+      name: install jq
+      code: wget -O /usr/local/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 && chmod a+x /usr/local/bin/jq
 
-    - internal/docker-push:
-        username: _token
-        password: $GCR_AUTH_TOKEN
-        repository: eu.gcr.io/eve-notifications/en-rss
-        registry: https://eu.gcr.io
-    
-    initialize:
-      - script:
-          name: install jq
-          code: wget -O /usr/local/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 && chmod a+x /usr/local/bin/jq
-      
-      - script:
-          name: gcr.io authentication
-          code: |
-            echo $CLIENT_SECRET | base64 --decode > ${HOME}/client-secret.json
-            gcloud auth activate-service-account --key-file ${HOME}/client-secret.json
-            gcloud config set project $GCLOUD_PROJECT
+  - script:
+      name: gcr.io authentication
+      code: |
+        echo $CLIENT_SECRET | base64 --decode > ${HOME}/client-secret.json
+        gcloud auth activate-service-account --key-file ${HOME}/client-secret.json
+        gcloud config set project $GCLOUD_PROJECT
+        gcloud docker --authorize-only
+        export GCR_AUTH_TOKEN=$(cat $HOME/.dockercfg | jq --raw-output '.["https://eu.gcr.io"].auth' | base64 --decode | cut -d ':' -f2)
 
-      - kubectl:
-          insecure-skip-tls-verify: true
-          command: create -f ens-rss-rc.yml
+  - internal/docker-push:
+      username: _token
+      password: $GCR_AUTH_TOKEN
+      repository: eu.gcr.io/eve-notifications/en-rss
+      registry: https://eu.gcr.io
+
+  initialize:
+  - script:
+      name: install jq
+      code: wget -O /usr/local/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 && chmod a+x /usr/local/bin/jq
+
+  - script:
+      name: gcr.io authentication
+      code: |
+        echo $CLIENT_SECRET | base64 --decode > ${HOME}/client-secret.json
+        gcloud auth activate-service-account --key-file ${HOME}/client-secret.json
+        gcloud config set project $GCLOUD_PROJECT
+
+  - kubectl:
+      insecure-skip-tls-verify: true
+      command: create -f ens-rss-rc.yml
