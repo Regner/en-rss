@@ -4,8 +4,8 @@ FROM debian:latest
 MAINTAINER Regner Blok-Andersen <shadowdf@gmail.com>
 
 RUN apt-get update -qq
-RUN apt-get upgrade -y
-RUN apt-get install -y python-dev python-pip
+RUN apt-get upgrade -y -qq
+RUN apt-get install -y -qq python-dev python-pip
 RUN pip install -qU pip
 
 ADD en_rss.py /en_rss/

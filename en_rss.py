@@ -8,6 +8,10 @@ from time import mktime, sleep
 from gcloud import datastore, pubsub
 from datetime import datetime
 
+logging.basicConfig()
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
 # App Settings
 SERVICE_ID = os.environ.get('SERVICE_ID', 'EN-RSS-EVE') 
 FEED = os.environ.get('FEED_URL', 'http://newsfeed.eveonline.com/en-US/2/articles/page/1/20')                                                                                                                                               
@@ -26,7 +30,7 @@ if not PS_TOPIC.exists():
     PS_TOPIC.create()
 
 while True:
-    logging.info('Checking {} for new entries'.format(SERVICE_ID))
+    logger.info('Checking {} for new entries'.format(SERVICE_ID))
     feed_data = feedparser.parse(FEED)
     latest_entry = DS_CLIENT.get(DS_CLIENT.key(SERVICE_KIND, 'latest-entry'))
 
