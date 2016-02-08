@@ -25,18 +25,14 @@ deploy:
   box: google/cloud-sdk
   steps:
     - script:
-        name: install jq
-        code: wget -O /usr/local/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 && chmod a+x /usr/local/bin/jq
-    
-    - script:
         name: gcr.io authentication
         code: |
-          gcloud auth activate-refresh-token $GCLOUD_ACCOUNT $GCLOUD_REFRESH_TOKEN
+          echo $CLIENT_SECRET | base64 --decode > ${HOME}/client-secret.json
+          gcloud --quiet components update app
+          gcloud auth activate-service-account --key-file ${HOME}/client-secret.json
+          gcloud config set project $GCLOUD_PROJECT
           gcloud docker --authorize-only
-          export GCR_AUTH_TOKEN=$(cat $HOME/.dockercfg | jq --raw-output '.["https://eu.gcr.io"].auth' | base64 --decode | cut -d ':' -f2)
     
     - internal/docker-push:
-        username: _token
-        password: $GCR_AUTH_TOKEN
         repository: eu.gcr.io/eve-notifications/en-rss
         registry: https://eu.gcr.io
