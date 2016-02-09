@@ -55,8 +55,9 @@ def update_latest_entry(latest_entry, new_latest_entry):
     if latest_entry is None:
         latest_entry = datastore.Entity(DS_CLIENT.key(SERVICE_KIND, 'latest-entry'))
 
-    latest_entry['published'] = new_latest_entry.published
-    DS_CLIENT.put(latest_entry)
+    if latest_entry['published'] != new_latest_entry.published:
+        latest_entry['published'] = new_latest_entry.published
+        DS_CLIENT.put(latest_entry)
 
 
 while True:
@@ -77,4 +78,3 @@ while True:
     update_latest_entry(latest_entry, feed_data.entries[0])
 
     sleep(SLEEP_TIME)
-

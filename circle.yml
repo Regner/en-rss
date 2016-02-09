@@ -20,3 +20,10 @@ deployment:
       - docker tag -f eu.gcr.io/eve-notifications/en-rss:$CIRCLE_SHA1 eu.gcr.io/eve-notifications/en-rss:latest
       - gcloud docker push eu.gcr.io/eve-notifications/en-rss:$CIRCLE_SHA1
       - gcloud docker push eu.gcr.io/eve-notifications/en-rss:latest
+
+  release:
+    tag: /release-.*/
+    commands:
+      - echo $CIRCLE_SHA1
+      - docker images
+      - kubectl get po
