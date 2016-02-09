@@ -1,0 +1,21 @@
+machine:
+  services:
+    - docker
+  environment:
+    GCLOUD_PROJECT: "eve-notifications"
+
+dependencies:
+  pre:
+    - pip install -r requirements.txt
+    - echo $CLIENT_SECRET | base64 --decode > ${HOME}/client-secret.json
+    - gcloud auth activate-service-account --key-file ${HOME}/client-secret.json
+    - gcloud config set project $GCLOUD_PROJECT
+    - gcloud docker --authorize-only
+
+deployment:
+  gcr.io:
+    branch: master
+    commands:
+      - docker build -t eu.gcr.io/eve-notifications/en-rss:$CIRCLE_SHA1 .
+      - gcloud docker push eu.gcr.io/eve-notifications/en-rss:$CIRCLE_SHA1
+      - gcloud docker push eu.gcr.io/eve-notifications/en-rss:latest
