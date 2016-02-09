@@ -19,6 +19,18 @@ spec:
       containers:
         - name: en-rss-dev
           image: eu.gcr.io/eve-notifications/en-rss:latest
+          volumeMounts:
+            - name: en-rss-secrets
+              mountPath: /media/secrets
           resources:
             limits:
               cpu: 50m
+          env:
+            - name: GCLOUD_DATASET_ID
+              value: eve-notifications
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: /media/secrets/key.json
+      volumes:
+        - name: en-rss-secrets
+          secret:
+            secretName: en-rss-secrets
