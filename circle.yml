@@ -17,5 +17,6 @@ deployment:
     branch: master
     commands:
       - docker build -t eu.gcr.io/eve-notifications/en-rss:$CIRCLE_SHA1 .
+      - docker tag -f eu.gcr.io/eve-notifications/en-rss:$CIRCLE_SHA1 eu.gcr.io/eve-notifications/en-rss:latest
       - gcloud docker push eu.gcr.io/eve-notifications/en-rss:$CIRCLE_SHA1
       - gcloud docker push eu.gcr.io/eve-notifications/en-rss:latest
