@@ -8,5 +8,5 @@ else
   cd ~ && git clone https://github.com/GoogleCloudPlatform/kubernetes.git
 fi
 
-# Build go source
-cd ~/kubernetes && hack/build-go.sh
+# Build
+cd ~/kubernetes && ./build/run.sh hack/build-cross.sh
