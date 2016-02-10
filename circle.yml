@@ -3,13 +3,10 @@ machine:
     - docker
   environment:
     GCLOUD_PROJECT: "eve-notifications"
-    DOCKER_IMAGE_NAME: "en-rss"
-    CLUSTER_NAME: "eve-notifications"
+    DOCKER_IMAGE_NAME: "eu.gcr.io/eve-notifications/en-rss"
     GCLOUD_ZONE: "europe-west1-d"
 
 dependencies:
-  cache_directories:
-    - ~/kubernetes
   pre:
     - ./ensure-kubernetes-installed.sh
     - ./setup-gcloud.sh
@@ -19,10 +16,15 @@ deployment:
     branch: master
     commands:
       - ./docker-push.sh
+      - export CLUSTER_NAME="eve-notifications"
+      - export RC_FILE="en-rss-rc-dev.yml.template"
+      - export RC_NAME="en-rss-dev"
+      - ./deploy.sh
 
   release:
     tag: /release-.*/
     commands:
-      - echo $CIRCLE_SHA1
-      - docker images
-      - ./kubernetes/cluster/kubectl.sh get po
+      - export CLUSTER_NAME="eve-notifications"
+      - export RC_FILE="en-rss-rc-release.yml.template"
+      - export RC_NAME="en-rss-release"
+      - ./deploy.sh

@@ -2,6 +2,10 @@
 
 set -e
 
+if [[ -d ~/kubernetes ]]; then
+  rm -rf ~/kubernetes
+fi
+
 function get_latest_version_number {
   local -r latest_url="https://storage.googleapis.com/kubernetes-release/release/stable.txt"
   curl -Ss ${latest_url}

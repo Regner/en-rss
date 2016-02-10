@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: en-rss-dev
-          image: eu.gcr.io/eve-notifications/en-rss:latest
+          image: eu.gcr.io/eve-notifications/en-rss:$CIRCLE_SHA1
           volumeMounts:
             - name: en-rss-secrets
               mountPath: /media/secrets
