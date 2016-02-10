@@ -2,13 +2,18 @@
 
 set -e
 
+function get_latest_version_number {
+  local -r latest_url="https://storage.googleapis.com/kubernetes-release/release/stable.txt"
+  curl -Ss ${latest_url}
+}
 
-if [[ -d ~/kubernetes ]]; then
-  echo "Kubernetes already installed"
-  rm -rf ~/kubernetes
-else
-  echo "Installing Kubernetes..."
-fi
+release=$(get_latest_version_number)
+release_url=https://storage.googleapis.com/kubernetes-release/release/${release}/kubernetes.tar.gz
+file=kubernetes.tar.gz
 
+echo "Downloading kubernetes release ${release} to ${PWD}/kubernetes.tar.gz"
+curl -L -o ${file} ${release_url}
 
-curl -sS https://get.k8s.io | bash
+echo "Unpacking kubernetes release ${release}"
+tar -xzf ${file}
+rm ${file}
