@@ -2,6 +2,8 @@
 
 set -e
 
+echo $CLUSTER_NAME
+
 gcloud config set container/cluster $CLUSTER_NAME
 gcloud container clusters get-credentials $CLUSTER_NAME
 
