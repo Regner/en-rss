@@ -8,8 +8,6 @@ machine:
     GCLOUD_ZONE: "europe-west1-d"
 
 dependencies:
-  cache_directories:
-    - ~/kubernetes
   pre:
     - ./ensure-kubernetes-installed.sh
     - ./setup-gcloud.sh
@@ -25,4 +23,4 @@ deployment:
     commands:
       - echo $CIRCLE_SHA1
       - docker images
-      - kubectl get po
+      - ./kubernetes/cluster/kubectl.sh get po
