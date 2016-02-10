@@ -3,11 +3,10 @@
 set -e
 
 if [[ -d ~/kubernetes ]]; then
-  rm -rf ~/kubernetes
+  cd ~/kubernetes && git pull
+else
+  cd ~ && git clone https://github.com/GoogleCloudPlatform/kubernetes.git
 fi
 
-# Clone repo
-(cd ~ && git clone https://github.com/GoogleCloudPlatform/kubernetes.git)
-
 # Build go source
-(cd ~/kubernetes && hack/build-go.sh)
+cd ~/kubernetes && hack/build-go.sh

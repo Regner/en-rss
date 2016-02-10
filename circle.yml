@@ -8,6 +8,8 @@ machine:
     GCLOUD_ZONE: "europe-west1-d"
 
 dependencies:
+  cache_directories:
+    - ~/kubernetes
   pre:
     - ./ensure-kubernetes-installed.sh
     - ./setup-gcloud.sh
