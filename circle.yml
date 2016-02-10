@@ -5,6 +5,7 @@ machine:
     GCLOUD_PROJECT: "eve-notifications"
     DOCKER_IMAGE_NAME: "en-rss"
     CLUSTER_NAME: "eve-notifications"
+    GCLOUD_ZONE: "europe-west1-d"
 
 dependencies:
   cache_directories:
