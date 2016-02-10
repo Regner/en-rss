@@ -2,11 +2,13 @@
 
 set -e
 
+
 if [[ -d ~/kubernetes ]]; then
-  cd ~/kubernetes && git pull
+  echo "Kubernetes already installed"
+  rm -rf ~/kubernetes
 else
-  cd ~ && git clone https://github.com/GoogleCloudPlatform/kubernetes.git
+  echo "Installing Kubernetes..."
 fi
 
-# Build
-cd ~/kubernetes && ./build/run.sh hack/build-cross.sh
+
+curl -sS https://get.k8s.io | bash
