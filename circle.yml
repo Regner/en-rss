@@ -8,17 +8,18 @@ machine:
 
 dependencies:
   pre:
-    - ./ensure-kubernetes-installed.sh
-    - ./setup-gcloud.sh
+    - git clone https://github.com/Regner/en-kube-config.git
+    - ./en-kube-config/ensure-kubernetes-installed.sh
+    - ./en-kube-config/setup-gcloud.sh
 
 deployment:
   gcr.io:
     branch: master
     commands:
-      - ./docker-push.sh
-      - ./deploy.sh "eve-notifications" "en-rss-rc-dev.yml.template" "en-rss-dev"
+      - ./en-kube-config/docker-push.sh
+      - ./en-kube-config/deploy.sh "eve-notifications" "en-kube-config/en-rss/en-rss-rc-dev.yml.template" "en-rss-dev"
 
   release:
     tag: /release-.*/
     commands:
-      - ./deploy.sh "eve-notifications" "en-rss-rc-release.yml.template" "en-rss-release"
+      - ./en-kube-config/deploy.sh "eve-notifications" "en-kube-config/en-rss/en-rss-rc-release.yml.template" "en-rss-release"
