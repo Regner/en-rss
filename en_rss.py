@@ -54,6 +54,8 @@ def send_notification(character_ids, title, url):
 def update_latest_entry(latest_entry, new_latest_entry):
     if latest_entry is None:
         latest_entry = datastore.Entity(DS_CLIENT.key(SERVICE_KIND, 'latest-entry'))
+        latest_entry['published'] = new_latest_entry.published
+        DS_CLIENT.put(latest_entry)
 
     if latest_entry['published'] != new_latest_entry.published:
         latest_entry['published'] = new_latest_entry.published
