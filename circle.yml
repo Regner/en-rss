@@ -3,23 +3,21 @@ machine:
     - docker
   environment:
     GCLOUD_PROJECT: "eve-notifications"
+    DOCKER_IMAGE_NAME: "en-rss"
+    CLUSTER_NAME: "eve-notifications"
 
 dependencies:
+  cache_directories:
+    - ~/kubernetes
   pre:
-    - pip install -r requirements.txt
-    - echo $CLIENT_SECRET | base64 --decode > ${HOME}/client-secret.json
-    - gcloud auth activate-service-account --key-file ${HOME}/client-secret.json
-    - gcloud config set project $GCLOUD_PROJECT
-    - gcloud docker --authorize-only
+    - ./ensure-kubernetes-installed.sh
+    - ./setup-gcloud.sh
 
 deployment:
   gcr.io:
     branch: master
     commands:
-      - docker build -t eu.gcr.io/eve-notifications/en-rss:$CIRCLE_SHA1 .
-      - docker tag -f eu.gcr.io/eve-notifications/en-rss:$CIRCLE_SHA1 eu.gcr.io/eve-notifications/en-rss:latest
-      - gcloud docker push eu.gcr.io/eve-notifications/en-rss:$CIRCLE_SHA1
-      - gcloud docker push eu.gcr.io/eve-notifications/en-rss:latest
+      - ./docker-push.sh
 
   release:
     tag: /release-.*/
