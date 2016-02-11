@@ -14,14 +14,19 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 # App Settings
-SERVICE_ID = os.environ.get('SERVICE_ID', 'EN-RSS-EVE') 
-FEED = os.environ.get('FEED_URL', 'http://newsfeed.eveonline.com/en-US/2/articles/page/1/20')                                                                                                                                               
 SLEEP_TIME = int(os.environ.get('SLEEP_TIME', 300))
+SERVICES = {
+    'eve-news': {'url': ''},
+    'eve-blogs': {'url': 'http://newsfeed.eveonline.com/en-US/2/articles/page/1/20'},
+    'eve-dev-blogs': {'url': ''},
+    'cz': {'url': ''},
+    'en24': {'url': ''},
+]
 
 # Datastore Settings
 DS_CLIENT = datastore.Client()
-SERVICE_KIND = os.environ.get('DATASTORE_SERVICE_KIND', SERVICE_ID)
-SETTINGS_KIND = os.environ.get('DATASTORE_SETTINGS_KIND', 'EN-SETTINGS')
+SERVICE_KIND = 'EN-RSS'
+SETTINGS_KIND = 'EN-RSS-SETTINGS'
 
 # PubSub Settings
 PS_CLIENT = pubsub.Client()
@@ -38,14 +43,15 @@ def process_new_entry(url, title):
 
 def get_characters():
     query = DS_CLIENT.query(kind=SETTINGS_KIND)
-    query.add_filter('service', '=', SERVICE_ID)
+    # query.add_filter('service', '=', SERVICE_ID)
+    # Change this to filter the feed id
     return [x['id'] for x in query.fetch()]
     
 
 def send_notification(character_ids, title, url):
     PS_TOPIC.publish(
         message=title,
-        service=SERVICE_ID,
+        service='EN-RSS',
         url=url,
         character_ids=character_ids
     )
