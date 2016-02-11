@@ -1,13 +1,13 @@
 
 
 import os
-import pytz
 import logging
+import urlparse
+import requests
 import feedparser
 
-from time import mktime, sleep
+from time import sleep
 from gcloud import datastore, pubsub
-from datetime import datetime
 
 logging.basicConfig()
 logger = logging.getLogger()
@@ -15,18 +15,18 @@ logger.setLevel(logging.INFO)
 
 # App Settings
 SLEEP_TIME = int(os.environ.get('SLEEP_TIME', 300))
-SERVICES = {
-    'eve-news': {'url': ''},
-    'eve-blogs': {'url': 'http://newsfeed.eveonline.com/en-US/2/articles/page/1/20'},
-    'eve-dev-blogs': {'url': ''},
-    'cz': {'url': ''},
-    'en24': {'url': ''},
+EN_RSS_SETTINGS_URL = os.environ.get('EN_RSS_SETTINGS_URL', 'http://en-rss-settings:8000/internal/')
+SERVICES = [
+    ('eve-news', 'http://newsfeed.eveonline.com/en-US/44/articles/page/1/20'),
+    ('eve-blogs', 'http://newsfeed.eveonline.com/en-US/2/articles/page/1/20'),
+    ('eve-dev-blogs', 'http://newsfeed.eveonline.com/en-US/95/articles'),
+    ('cz', 'http://crossingzebras.com/feed/'),
+    ('en24', 'http://evenews24.com/feed/'),
 ]
 
 # Datastore Settings
 DS_CLIENT = datastore.Client()
 SERVICE_KIND = 'EN-RSS'
-SETTINGS_KIND = 'EN-RSS-SETTINGS'
 
 # PubSub Settings
 PS_CLIENT = pubsub.Client()
@@ -36,16 +36,15 @@ if not PS_TOPIC.exists():
     PS_TOPIC.create()
 
 
-def process_new_entry(url, title):
-    character_ids = get_characters()
+def process_new_entry(feed, url, title):
+    character_ids = get_characters(feed)
     send_notification(character_ids, title, url)
 
 
-def get_characters():
-    query = DS_CLIENT.query(kind=SETTINGS_KIND)
-    # query.add_filter('service', '=', SERVICE_ID)
-    # Change this to filter the feed id
-    return [x['id'] for x in query.fetch()]
+def get_characters(feed):
+    url = urlparse.urljoin(EN_RSS_SETTINGS_URL, feed)
+    response = requests.get(url)
+    return response.json()
     
 
 def send_notification(character_ids, title, url):
@@ -57,9 +56,9 @@ def send_notification(character_ids, title, url):
     )
 
 
-def update_latest_entry(latest_entry, new_latest_entry):
+def update_latest_entry(feed, latest_entry, new_latest_entry):
     if latest_entry is None:
-        latest_entry = datastore.Entity(DS_CLIENT.key(SERVICE_KIND, 'latest-entry'))
+        latest_entry = datastore.Entity(DS_CLIENT.key(SERVICE_KIND, 'latest-entry', 'Feed', feed))
         latest_entry['published'] = new_latest_entry.published
         DS_CLIENT.put(latest_entry)
 
@@ -69,20 +68,21 @@ def update_latest_entry(latest_entry, new_latest_entry):
 
 
 while True:
-    logger.info('Checking {} for new entries'.format(SERVICE_ID))
-    feed_data = feedparser.parse(FEED)
-    latest_entry = DS_CLIENT.get(DS_CLIENT.key(SERVICE_KIND, 'latest-entry'))
+    for feed, url in SERVICES:
+        logger.info('Checking {} for new entries'.format(feed))
+        feed_data = feedparser.parse(url)
+        latest_entry = DS_CLIENT.get(DS_CLIENT.key(SERVICE_KIND, 'latest-entry', 'Feed', feed))
 
-    for entry in feed_data.entries:
-        if latest_entry is not None:
-            if latest_entry['published'] == entry.published:
-                break
+        for entry in feed_data.entries:
+            if latest_entry is not None:
+                if latest_entry['published'] == entry.published:
+                    break
 
-        converted_title = entry.title.encode('utf8')
+            converted_title = entry.title.encode('utf8')
 
-        logger.info('New entry found for {}! Entry title: {}'.format(SERVICE_ID, converted_title))
-        process_new_entry(entry.url, converted_title)
+            logger.info('New entry found for {}! Entry title: {}'.format(feed, converted_title))
+            process_new_entry(feed, entry.url, converted_title)
 
-    update_latest_entry(latest_entry, feed_data.entries[0])
+        update_latest_entry(feed, latest_entry, feed_data.entries[0])
 
     sleep(SLEEP_TIME)
