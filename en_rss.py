@@ -49,7 +49,7 @@ def get_characters(feed):
 
 def send_notification(character_ids, title, url):
     PS_TOPIC.publish(
-        message=title,
+        title,
         service='EN-RSS',
         url=url,
         character_ids=character_ids
