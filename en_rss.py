@@ -20,7 +20,7 @@ SERVICES = [
     ('eve-news', 'http://newsfeed.eveonline.com/en-US/44/articles/page/1/20'),
     ('eve-blogs', 'http://newsfeed.eveonline.com/en-US/2/articles/page/1/20'),
     ('eve-dev-blogs', 'http://newsfeed.eveonline.com/en-US/95/articles'),
-    # ('cz', 'http://crossingzebras.com/feed/'),
+    ('cz', 'http://crossingzebras.com/feed/'),
     ('en24', 'http://evenews24.com/feed/'),
 ]
 
@@ -80,7 +80,7 @@ while True:
             converted_title = entry.title.encode('utf8')
 
             logger.info('New entry found for {}! Entry title: {}'.format(feed, converted_title))
-            process_new_entry(feed, entry.url, converted_title)
+            process_new_entry(feed, entry.link, converted_title)
 
         update_latest_entry(feed, latest_entry, feed_data.entries[0])
 
