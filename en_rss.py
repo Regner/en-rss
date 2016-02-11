@@ -38,7 +38,10 @@ if not PS_TOPIC.exists():
 
 def process_new_entry(feed, url, title):
     character_ids = get_characters(feed)
-    send_notification(character_ids, title, url)
+    logging.info('{}'.format(character_ids))
+    
+    if len(character_ids) > 0:
+        send_notification(character_ids, title, url)
 
 
 def get_characters(feed):
@@ -52,7 +55,7 @@ def send_notification(character_ids, title, url):
         title,
         service='EN-RSS',
         url=url,
-        character_ids=character_ids
+        character_ids=character_ids,
     )
 
 
