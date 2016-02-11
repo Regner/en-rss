@@ -48,6 +48,8 @@ def process_new_entry(feed, url, title):
 def get_characters(feed):
     url = urlparse.urljoin(EN_RSS_SETTINGS_URL, feed)
     response = requests.get(url)
+    response.raise_for_status()
+    
     return response.json()
     
 
