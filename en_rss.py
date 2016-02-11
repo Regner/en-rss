@@ -41,6 +41,7 @@ def process_new_entry(feed, url, title):
     logging.info('{}'.format(character_ids))
     
     if len(character_ids) > 0:
+        logging.info('There are {}'.format(len(character_ids)))
         send_notification(character_ids, title, url)
 
 
@@ -51,12 +52,7 @@ def get_characters(feed):
     
 
 def send_notification(character_ids, title, url):
-    PS_TOPIC.publish(
-        title,
-        service='EN-RSS',
-        url=url,
-        character_ids=character_ids,
-    )
+    PS_TOPIC.publish(title)
 
 
 def update_latest_entry(feed, latest_entry, new_latest_entry):
