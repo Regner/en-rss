@@ -12,6 +12,10 @@ dependencies:
     - ./en-kube-config/ensure-kubernetes-installed.sh
     - ./en-kube-config/setup-gcloud.sh
 
+test:
+  override:
+    - echo "No tests yet. :("
+
 deployment:
   build and deploy to dev:
     branch: master
