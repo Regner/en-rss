@@ -20,7 +20,7 @@ SERVICES = [
     ('eve-news', 'http://newsfeed.eveonline.com/en-US/44/articles/page/1/20'),
     ('eve-blogs', 'http://newsfeed.eveonline.com/en-US/2/articles/page/1/20'),
     ('eve-dev-blogs', 'http://newsfeed.eveonline.com/en-US/95/articles'),
-    ('cz', 'http://crossingzebras.com/feed/'),
+    # ('cz', 'http://crossingzebras.com/feed/'),
     ('en24', 'http://evenews24.com/feed/'),
 ]
 
