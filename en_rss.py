@@ -42,6 +42,9 @@ def process_new_entry(feed, url, title):
     
     if len(character_ids) > 0:
         send_notification(character_ids, title, url)
+    
+    else:
+        logger.info('No subscribers for {}.'.format(feed))
 
 
 def get_characters(feed):
