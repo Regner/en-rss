@@ -1,6 +1,7 @@
 
 
 import os
+import json
 import logging
 import urlparse
 import requests
@@ -52,9 +53,14 @@ def get_characters(feed):
     
 
 def send_notification(character_ids, title, url):
+    logger.info('Publishing notification about {} for {} characters.'.format(title, len(character_ids)))
+    character_ids_json = json.dumps(character_ids)
+    
     PS_TOPIC.publish(
         title,
         url=url,
+        service='en-rss',
+        character_ids=character_ids_json,
     )
 
 
