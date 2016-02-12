@@ -52,7 +52,10 @@ def get_characters(feed):
     
 
 def send_notification(character_ids, title, url):
-    PS_TOPIC.publish(title)
+    PS_TOPIC.publish(
+        title,
+        url=url,
+    )
 
 
 def update_latest_entry(feed, latest_entry, new_latest_entry):
