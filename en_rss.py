@@ -82,12 +82,13 @@ def update_latest_entry(feed, latest_entry, new_latest_entry):
 
 while True:
     services = get_services()
+    logger.info('Got the following service definitions: {}'.format(services))
     
     for feed_id in services:
         feed_url = services[feed_id]['url']
         feed_name = services[feed_id]['name']
         
-        logger.info('Checking {} for new entries'.format(feed_id))
+        logger.info('Checking {} for new entries.'.format(feed_id))
         feed_data = feedparser.parse(feed_url)
         latest_entry = DS_CLIENT.get(DS_CLIENT.key(SERVICE_KIND, 'latest-entry', 'Feed', feed_id))
 
