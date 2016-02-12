@@ -38,10 +38,8 @@ if not PS_TOPIC.exists():
 
 def process_new_entry(feed, url, title):
     character_ids = get_characters(feed)
-    logging.info('{}'.format(character_ids))
     
     if len(character_ids) > 0:
-        logging.info('There are {}'.format(len(character_ids)))
         send_notification(character_ids, title, url)
 
 
