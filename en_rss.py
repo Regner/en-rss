@@ -16,7 +16,7 @@ logger.setLevel(logging.INFO)
 
 # App Settings
 SLEEP_TIME = int(os.environ.get('SLEEP_TIME', 300))
-EN_RSS_SETTINGS_URL = os.environ.get('EN_RSS_SETTINGS_URL', 'http://en-rss-settings:8000/internal/')
+EN_RSS_SETTINGS_URL = os.environ.get('EN_RSS_SETTINGS_URL', 'http://en-rss-settings:8000/')
 
 # Datastore Settings
 DS_CLIENT = datastore.Client()
@@ -41,7 +41,7 @@ def process_new_entry(feed_id, feed_name, url, title):
 
 
 def get_characters(feed):
-    url = urlparse.urljoin(EN_RSS_SETTINGS_URL, feed)
+    url = urlparse.urljoin(EN_RSS_SETTINGS_URL, 'internal', feed)
     response = requests.get(url)
     response.raise_for_status()
     
