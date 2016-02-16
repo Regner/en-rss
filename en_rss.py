@@ -37,7 +37,7 @@ def process_new_entry(feed_id, feed_name, url, title):
         send_notification(character_ids, title, url, feed_name, feed_id)
     
     else:
-        logger.info('No subscribers for {} so not publishing message for {}.'.format(feed, title))
+        logger.info('No subscribers for {} so not publishing message for {}.'.format(feed_id, title))
 
 
 def get_characters(feed):
