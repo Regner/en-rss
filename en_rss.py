@@ -30,14 +30,14 @@ if not PS_TOPIC.exists():
     PS_TOPIC.create()
 
 
-def process_new_entry(feed_id, feed_name, url, title):
+def process_new_entry(feed_id, feed_name, url, entry_title):
     character_ids = get_characters(feed_id)
     
     if len(character_ids) > 0:
-        send_notification(character_ids, title, url, feed_name, feed_id)
+        send_notification(character_ids, feed_name, url, entry_title, feed_id)
     
     else:
-        logger.info('No subscribers for {} so not publishing message for {}.'.format(feed_id, title))
+        logger.info('No subscribers for {} so not publishing message for {}.'.format(feed_id, entry_title))
 
 
 def get_characters(feed):
@@ -56,14 +56,15 @@ def get_services():
     
     return response.json()
 
-def send_notification(character_ids, title, url, feed_name, feed_id):
+def send_notification(character_ids, title, url, subtitle, feed_id):
     logger.info('Publishing notification about {} for {} characters.'.format(title, len(character_ids)))
     character_ids_json = json.dumps(character_ids)
     
     PS_TOPIC.publish(
-        title,
+        '',
         url=url,
-        feed_name=feed_name,
+        title=title,
+        subtitle=subtitle,
         service='en-rss',
         character_ids=character_ids_json,
         collapse_key=feed_id,
