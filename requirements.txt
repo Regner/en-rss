@@ -1,4 +1,4 @@
-gcloud==0.9.0
+gcloud==0.10.1
 requests==2.9.1
 python-gcm==0.4
 feedparser==5.2.1
