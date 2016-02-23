@@ -1,6 +1,7 @@
 
 
 import os
+import json
 import logging
 import feedparser
 
@@ -56,7 +57,7 @@ if not PS_TOPIC.exists():
 def send_notification(title, url, subtitle, feed_id):
     logger.info('Publishing notification about {}.'.format(title))
     
-    topic = '/rss/{}'.format(feed_id)
+    topics = json.dumps(['/rss-{}'.format(feed_id)])
     
     PS_TOPIC.publish(
         '',
@@ -64,7 +65,7 @@ def send_notification(title, url, subtitle, feed_id):
         title=title,
         subtitle=subtitle,
         service='en-rss',
-        topic=topic,
+        topics=topics,
     )
 
 
