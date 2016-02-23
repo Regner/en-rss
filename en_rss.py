@@ -1,10 +1,7 @@
 
 
 import os
-import json
 import logging
-import urlparse
-import requests
 import feedparser
 
 from time import sleep
@@ -16,7 +13,33 @@ logger.setLevel(logging.INFO)
 
 # App Settings
 SLEEP_TIME = int(os.environ.get('SLEEP_TIME', 300))
-EN_RSS_SETTINGS_URL = os.environ.get('EN_RSS_SETTINGS_URL', 'http://en-rss-settings:8000/')
+SERVICES = {
+    'eve-news': {
+        'name': 'EVE Online News',
+        'url': 'http://newsfeed.eveonline.com/en-US/44/articles/page/1/20',
+        'official': True,
+    },
+    'eve-blogs': {
+        'name': 'EVE Online Dev Blogs',
+        'url': 'http://newsfeed.eveonline.com/en-US/2/articles/page/1/20',
+        'official': True,
+    },
+    'eve-dev-blogs': {
+        'name': 'EVE Online Developers Dev Blogs',
+        'url': 'http://newsfeed.eveonline.com/en-US/95/articles',
+        'official': True,
+    },
+    'cz': {
+        'name': 'Crossing Zebras',
+        'url': 'http://crossingzebras.com/feed/',
+        'official': False,
+    },
+    'en24': {
+        'name': 'EVE News 24',
+        'url': 'http://evenews24.com/feed/',
+        'official': False,
+    },
+}
 
 # Datastore Settings
 DS_CLIENT = datastore.Client()
@@ -30,35 +53,10 @@ if not PS_TOPIC.exists():
     PS_TOPIC.create()
 
 
-def process_new_entry(feed_id, feed_name, url, entry_title):
-    character_ids = get_characters(feed_id)
+def send_notification(title, url, subtitle, feed_id):
+    logger.info('Publishing notification about {}.'.format(title))
     
-    if len(character_ids) > 0:
-        send_notification(character_ids, feed_name, url, entry_title, feed_id)
-    
-    else:
-        logger.info('No subscribers for {} so not publishing message for {}.'.format(feed_id, entry_title))
-
-
-def get_characters(feed):
-    url = urlparse.urljoin(EN_RSS_SETTINGS_URL, 'internal/')
-    full_url = urlparse.urljoin(url, feed)
-    response = requests.get(full_url)
-    response.raise_for_status()
-    
-    return response.json()
-
-
-def get_services():
-    url = urlparse.urljoin(EN_RSS_SETTINGS_URL, 'external')
-    response = requests.get(url)
-    response.raise_for_status()
-    
-    return response.json()
-
-def send_notification(character_ids, title, url, subtitle, feed_id):
-    logger.info('Publishing notification about {} for {} characters.'.format(title, len(character_ids)))
-    character_ids_json = json.dumps(character_ids)
+    topic = '/rss/{}'.format(feed_id)
     
     PS_TOPIC.publish(
         '',
@@ -66,8 +64,7 @@ def send_notification(character_ids, title, url, subtitle, feed_id):
         title=title,
         subtitle=subtitle,
         service='en-rss',
-        character_ids=character_ids_json,
-        collapse_key=feed_id,
+        topic=topic,
     )
 
 
@@ -83,14 +80,11 @@ def update_latest_entry(feed, latest_entry, new_latest_entry):
 
 
 while True:
-    services = get_services()
-    logger.info('Got the following service definitions: {}'.format(services))
-    
-    for feed_id in services:
-        feed_url = services[feed_id]['url']
-        feed_name = services[feed_id]['name']
-        
+    for feed_id in SERVICES:
         logger.info('Checking {} for new entries.'.format(feed_id))
+        
+        feed_url = SERVICES[feed_id]['url']
+        feed_name = SERVICES[feed_id]['name']
         feed_data = feedparser.parse(feed_url)
         latest_entry = DS_CLIENT.get(DS_CLIENT.key(SERVICE_KIND, 'latest-entry', 'Feed', feed_id))
 
@@ -102,7 +96,7 @@ while True:
             converted_title = entry.title.encode('utf8')
 
             logger.info('New entry found for {}! Entry title: {}'.format(feed_id, converted_title))
-            process_new_entry(feed_id, feed_name, entry.link, converted_title)
+            pend_notification(feed_name, url, entry_title, feed_id)
 
         update_latest_entry(feed_id, latest_entry, feed_data.entries[0])
 
