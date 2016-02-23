@@ -97,7 +97,7 @@ while True:
             converted_title = entry.title.encode('utf8')
 
             logger.info('New entry found for {}! Entry title: {}'.format(feed_id, converted_title))
-            pend_notification(feed_name, url, entry_title, feed_id)
+            send_notification(feed_name, url, entry_title, feed_id)
 
         update_latest_entry(feed_id, latest_entry, feed_data.entries[0])
 
