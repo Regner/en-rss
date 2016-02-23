@@ -57,7 +57,7 @@ if not PS_TOPIC.exists():
 def send_notification(title, url, subtitle, feed_id):
     logger.info('Publishing notification about {}.'.format(title))
     
-    topics = json.dumps(['/rss-{}'.format(feed_id)])
+    topics = json.dumps(['/topics/{}'.format(feed_id)])
     
     PS_TOPIC.publish(
         '',
@@ -97,7 +97,7 @@ while True:
             converted_title = entry.title.encode('utf8')
 
             logger.info('New entry found for {}! Entry title: {}'.format(feed_id, converted_title))
-            send_notification(feed_name, url, entry_title, feed_id)
+            send_notification(feed_name, feed_url, converted_title, feed_id)
 
         update_latest_entry(feed_id, latest_entry, feed_data.entries[0])
 
