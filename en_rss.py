@@ -55,8 +55,6 @@ if not PS_TOPIC.exists():
 
 
 def send_notification(title, url, subtitle, feed_id):
-    logger.info('Publishing notification about {}.'.format(title))
-    
     topics = json.dumps([feed_id])
     
     PS_TOPIC.publish(
