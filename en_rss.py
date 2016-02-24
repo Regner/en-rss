@@ -3,6 +3,7 @@
 import os
 import json
 import logging
+import requests
 import feedparser
 
 from time import sleep
@@ -14,33 +15,7 @@ logger.setLevel(logging.INFO)
 
 # App Settings
 SLEEP_TIME = int(os.environ.get('SLEEP_TIME', 300))
-SERVICES = {
-    'eve-news': {
-        'name': 'EVE Online News',
-        'url': 'http://newsfeed.eveonline.com/en-US/44/articles/page/1/20',
-        'official': True,
-    },
-    'eve-blogs': {
-        'name': 'EVE Online Dev Blogs',
-        'url': 'http://newsfeed.eveonline.com/en-US/2/articles/page/1/20',
-        'official': True,
-    },
-    'eve-dev-blogs': {
-        'name': 'EVE Online Developers Dev Blogs',
-        'url': 'http://newsfeed.eveonline.com/en-US/95/articles',
-        'official': True,
-    },
-    'cz': {
-        'name': 'Crossing Zebras',
-        'url': 'http://crossingzebras.com/feed/',
-        'official': False,
-    },
-    'en24': {
-        'name': 'EVE News 24',
-        'url': 'http://evenews24.com/feed/',
-        'official': False,
-    },
-}
+EN_TOPIC_SETTINGS = os.environ.get('EN_TOPIC_SETTINGS', 'http://en-topic-settings:80/external')
 
 # Datastore Settings
 DS_CLIENT = datastore.Client()
@@ -67,6 +42,13 @@ def send_notification(title, url, subtitle, feed_id):
     )
 
 
+def get_services():
+    response = requests.get(EN_RSS_SETTINGS_URL)
+    response.raise_for_status()
+
+    return response.json()['rss']['topics']
+
+
 def update_latest_entry(feed, latest_entry, new_latest_entry):
     if latest_entry is None:
         latest_entry = datastore.Entity(DS_CLIENT.key(SERVICE_KIND, 'latest-entry', 'Feed', feed))
@@ -79,16 +61,16 @@ def update_latest_entry(feed, latest_entry, new_latest_entry):
 
 
 while True:
-    for feed_id in SERVICES:
-        logger.info('Checking {} for new entries.'.format(feed_id))
-        
-        feed_url = SERVICES[feed_id]['url']
-        feed_name = SERVICES[feed_id]['name']
-        feed_data = feedparser.parse(feed_url)
-        latest_entry = DS_CLIENT.get(DS_CLIENT.key(SERVICE_KIND, 'latest-entry', 'Feed', feed_id))
+    services = get_services()
+    
+    for feed in services:
+        logger.info('Checking "{}" for new entries.'.format(feed['name']))
+
+        feed_data = feedparser.parse(feed['url'])
+        latest_entry = DS_CLIENT.get(DS_CLIENT.key(SERVICE_KIND, 'latest-entry', 'Feed', feed['topic']))
         
         if 'bozo_exception' in feed_data:
-            logger.info('Bozo exception "{}" when trying to fetch {}'.format(feed_data['bozo_exception'], feed_url))
+            logger.info('Bozo exception "{}" when trying to fetch {}'.format(feed_data['bozo_exception'], feed['url']))
 
         for entry in feed_data.entries:
             if latest_entry is not None:
@@ -97,10 +79,10 @@ while True:
 
             converted_title = entry.title.encode('utf8')
 
-            logger.info('New entry found for {}! Entry title: {}'.format(feed_id, converted_title))
-            send_notification(feed_name, feed_url, converted_title, feed_id)
+            logger.info('New entry found for "{}"! Entry title: {}'.format(feed['name'], converted_title))
+            send_notification(feed['name'], feed['url'], converted_title, feed['topic'])
 
         if len(feed_data.entries) > 0:
-            update_latest_entry(feed_id, latest_entry, feed_data.entries[0])
+            update_latest_entry(feed['topic'], latest_entry, feed_data.entries[0])
 
     sleep(SLEEP_TIME)
