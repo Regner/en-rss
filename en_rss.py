@@ -43,7 +43,7 @@ def send_notification(title, url, subtitle, feed_id):
 
 
 def get_services():
-    response = requests.get(EN_RSS_SETTINGS_URL)
+    response = requests.get(EN_TOPIC_SETTINGS)
     response.raise_for_status()
 
     return response.json()['rss']['topics']
