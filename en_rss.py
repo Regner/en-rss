@@ -86,6 +86,9 @@ while True:
         feed_name = SERVICES[feed_id]['name']
         feed_data = feedparser.parse(feed_url)
         latest_entry = DS_CLIENT.get(DS_CLIENT.key(SERVICE_KIND, 'latest-entry', 'Feed', feed_id))
+        
+        if 'bozo_exception' in feed_data:
+            logger.info('Bozo exception "{}" when trying to fetch {}'.format(feed_data['bozo_exception'], feed_url))
 
         for entry in feed_data.entries:
             if latest_entry is not None:
@@ -97,6 +100,7 @@ while True:
             logger.info('New entry found for {}! Entry title: {}'.format(feed_id, converted_title))
             send_notification(feed_name, feed_url, converted_title, feed_id)
 
-        update_latest_entry(feed_id, latest_entry, feed_data.entries[0])
+        if len(feed_data.entries) > 0:
+            update_latest_entry(feed_id, latest_entry, feed_data.entries[0])
 
     sleep(SLEEP_TIME)
