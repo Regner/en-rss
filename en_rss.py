@@ -82,7 +82,7 @@ while True:
 
             logger.info('New entry found for "{}"! Entry title: {}'.format(feed['name'], converted_title))
             
-            send_notification(feed['name'], feed['url'], converted_title, feed['topic'])
-            update_latest_entry(feed['topic'], latest_entry, feed_data.entries[0])
+            send_notification(feed['name'], entry['link'], converted_title, feed['topic'])
+            update_latest_entry(feed['topic'], latest_entry, entry)
 
     sleep(SLEEP_TIME)
