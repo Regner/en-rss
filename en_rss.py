@@ -75,12 +75,14 @@ while True:
             entry = feed_data.entries[0]
             latest_entry = DS_CLIENT.get(DS_CLIENT.key(SERVICE_KIND, 'latest-entry', 'Feed', feed['topic']))
             
-            if latest_entry is not None and latest_entry['published'] != entry.published:
-                converted_title = entry.title.encode('utf8')
-    
-                logger.info('New entry found for "{}"! Entry title: {}'.format(feed['name'], converted_title))
-                
-                send_notification(feed['name'], feed['url'], converted_title, feed['topic'])
-                update_latest_entry(feed['topic'], latest_entry, feed_data.entries[0])
+            if latest_entry is not None and latest_entry['published'] == entry.published:
+                continue
+            
+            converted_title = entry.title.encode('utf8')
+
+            logger.info('New entry found for "{}"! Entry title: {}'.format(feed['name'], converted_title))
+            
+            send_notification(feed['name'], feed['url'], converted_title, feed['topic'])
+            update_latest_entry(feed['topic'], latest_entry, feed_data.entries[0])
 
     sleep(SLEEP_TIME)
