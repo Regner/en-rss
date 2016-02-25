@@ -72,7 +72,7 @@ while True:
             logger.info('Bozo exception "{}" when trying to fetch {}'.format(feed_data['bozo_exception'], feed['url']))
 
         if len(feed_data.entries) > 0:
-            entry = feed.entries[0]
+            entry = feed_data.entries[0]
             latest_entry = DS_CLIENT.get(DS_CLIENT.key(SERVICE_KIND, 'latest-entry', 'Feed', feed['topic']))
             
             if latest_entry is not None and latest_entry['published'] != entry.published:
