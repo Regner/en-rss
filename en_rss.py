@@ -66,10 +66,10 @@ while True:
     for feed in services:
         logger.info('Checking "{}" for new entries.'.format(feed['name']))
 
-        feed_data = feedparser.parse(feed['url'])
+        feed_data = feedparser.parse(feed['feed'])
         
         if 'bozo_exception' in feed_data:
-            logger.info('Bozo exception "{}" when trying to fetch {}'.format(feed_data['bozo_exception'], feed['url']))
+            logger.info('Bozo exception "{}" when trying to fetch {}'.format(feed_data['bozo_exception'], feed['feed']))
 
         if len(feed_data.entries) > 0:
             entry = feed_data.entries[0]
