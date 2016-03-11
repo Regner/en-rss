@@ -14,7 +14,7 @@ logger.setLevel(logging.INFO)
 
 # App Settings
 SLEEP_TIME = int(os.environ.get('SLEEP_TIME', 120))
-EN_TOPIC_SETTINGS = os.environ.get('EN_TOPIC_SETTINGS', 'http://en-topic-settings:80/external')
+EN_TOPIC_SETTINGS = os.environ.get('EN_TOPIC_SETTINGS', 'http://en-topic-settings/external')
 
 # Datastore Settings
 DS_CLIENT = datastore.Client()
